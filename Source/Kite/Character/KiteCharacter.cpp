@@ -47,6 +47,14 @@ AKiteCharacter::AKiteCharacter()
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
 	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
+
+	// 实例化ASC
+	AbilitySystem = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("AbilitySystem"));
+}
+
+UAbilitySystemComponent* AKiteCharacter::GetAbilitySystemComponent() const
+{
+	return AbilitySystem;
 }
 
 // Called when the game starts or when spawned
@@ -61,6 +69,21 @@ void AKiteCharacter::BeginPlay()
 		{
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
+	}
+
+	//添加技能给ASC
+	if (AbilitySystem)
+	{
+		// 本地控制的角色才添加技能
+		if(HasAuthority())
+		{
+			for(const auto& AbilityClass : Abilities)
+			{
+				AbilitySystem->GiveAbility(FGameplayAbilitySpec(AbilityClass, 1, 0));
+			}
+		}
+		// 初始化ASC
+		AbilitySystem->InitAbilityActorInfo(this, this);
 	}
 }
 
@@ -85,6 +108,8 @@ void AKiteCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 		//Jumping
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ACharacter::Jump);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
+		
+		EnhancedInputComponent->BindAction(MeleeAttackAction, ETriggerEvent::Triggered, this, &AKiteCharacter::MeleeAttack);
 	}
 }
 
@@ -128,6 +153,11 @@ void AKiteCharacter::Move(const FInputActionValue& Value)
 		AddMovementInput(ForwardDirection, MovementVector.Y);
 		AddMovementInput(RightDirection, MovementVector.X);
 	}
+}
+
+void AKiteCharacter::MeleeAttack(const FInputActionValue& Value)
+{
+	K2_MeleeAttack(Value);
 }
 
 // void AKiteCharacter::OnRep_CurrentHealth()
