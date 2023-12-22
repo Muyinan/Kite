@@ -9,6 +9,7 @@
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Kite/KiteCommonTypes.h"
 
 
 // Sets default values
@@ -106,10 +107,10 @@ void AKiteCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 		//Moving
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AKiteCharacter::Move);
 		//Jumping
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ACharacter::Jump);
+		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
 		
-		EnhancedInputComponent->BindAction(MeleeAttackAction, ETriggerEvent::Triggered, this, &AKiteCharacter::MeleeAttack);
+		EnhancedInputComponent->BindAction(MeleeAttackAction, ETriggerEvent::Started, this, &AKiteCharacter::MeleeAttack);
 	}
 }
 
@@ -131,7 +132,10 @@ void AKiteCharacter::Move(const FInputActionValue& Value)
 {
 	// input is a Vector2D
 	FVector2D MovementVector = Value.Get<FVector2D>();
-	
+
+	// MeleeAttackAction->DestroyNonNativeProperties();
+	kwarn("MeleeAttackAction = nullptr");
+
 	if (Controller != nullptr)
 	{
 		// find out which way is forward
@@ -157,6 +161,7 @@ void AKiteCharacter::Move(const FInputActionValue& Value)
 
 void AKiteCharacter::MeleeAttack(const FInputActionValue& Value)
 {
+	kwarn("%s", ToCStr(GetClass()->GetName()));
 	K2_MeleeAttack(Value);
 }
 

@@ -5,8 +5,8 @@
 #include "CoreMinimal.h"
 #include "AbilitySystemComponent.h"
 #include "AbilitySystemInterface.h"
-#include "InputActionValue.h"
 #include "GameFramework/Character.h"
+#include "Kite/Abilities/KiteAbilityTypes.h"
 #include "KiteCharacter.generated.h"
 
 class USpringArmComponent;
@@ -48,6 +48,7 @@ protected:
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void K2_MeleeAttack(const FInputActionValue& Value);
+	
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = GameplayAbilities, meta = (AllowPrivateAccess = "true"))
 	UAbilitySystemComponent* AbilitySystem;
@@ -62,6 +63,10 @@ protected:
 	// UPROPERTY(ReplicatedUsing = OnRep_CurrentHealth)
 	// float CurrentHealth;
 	
+	// UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = GameplayAbilities)
+	// TMap<TPair<TObjectPtr<UInputAction>, TObjectPtr<UGameplayAbility>>, FKiteActionAbilityData*> AbilityMap;
+	// TMap<FString, FKiteActionAbilityData> AbilityMap;
+
 private:
 	/** Camera boom positioning the camera behind the character */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
