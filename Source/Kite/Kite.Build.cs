@@ -8,6 +8,12 @@ public class Kite : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
+		PublicIncludePaths.AddRange(
+			new string[] {
+				"Kite"
+			}
+		);
+		
 		PublicDependencyModuleNames.AddRange(
 			new string[]
 			{
@@ -18,7 +24,8 @@ public class Kite : ModuleRules
 				"EnhancedInput", 
 				"GameplayAbilities", 
 				"GameplayTasks", 
-				"GameplayTags"
+				"GameplayTags",
+				"ModularGameplay"
 			});
 
 		PrivateDependencyModuleNames.AddRange(

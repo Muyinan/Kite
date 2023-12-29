@@ -4,26 +4,24 @@
 
 #include "CoreMinimal.h"
 #include "AbilitySystemComponent.h"
-#include "AbilitySystemInterface.h"
 #include "GameFramework/Character.h"
-#include "Kite/Abilities/KiteAbilityTypes.h"
 #include "KiteCharacter.generated.h"
 
+class UKiteAbilitySystemComponent;
 class USpringArmComponent;
 class UCameraComponent;
 class UInputMappingContext;
 class UInputAction;
+class UKiteActionComponent;
 
 UCLASS(config=Game)
-class KITE_API AKiteCharacter : public ACharacter, public IAbilitySystemInterface
+class KITE_API AKiteCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
 public:
 	// Sets default values for this character's properties
-	AKiteCharacter();
-
-	UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+	AKiteCharacter(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 	
 	// Called every frame
 	// virtual void Tick(float DeltaTime) override;
@@ -50,11 +48,9 @@ protected:
 	void K2_MeleeAttack(const FInputActionValue& Value);
 	
 public:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = GameplayAbilities, meta = (AllowPrivateAccess = "true"))
-	UAbilitySystemComponent* AbilitySystem;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = GameplayAbilities)
-	TArray<TSubclassOf<UGameplayAbility>> Abilities;
+	// UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = GameplayAbilities)
+	// TArray<TSubclassOf<UGameplayAbility>> Abilities;
 	
 protected:
 	// UPROPERTY(EditDefaultsOnly, Category = "Health")
@@ -93,4 +89,7 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> MeleeAttackAction;
+
+	UPROPERTY()
+	TObjectPtr<UKiteActionComponent> KiteActionComponent;
 };

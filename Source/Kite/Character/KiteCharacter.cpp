@@ -5,15 +5,18 @@
 
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "KiteActionComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
-#include "Kite/KiteCommonTypes.h"
+#include "Common/KiteMacros.h"
+#include "Input/KiteInputComponent.h"
 
 
 // Sets default values
-AKiteCharacter::AKiteCharacter()
+AKiteCharacter::AKiteCharacter(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer)
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	// PrimaryActorTick.bCanEverTick = true;
@@ -49,13 +52,7 @@ AKiteCharacter::AKiteCharacter()
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
 	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 
-	// 实例化ASC
-	AbilitySystem = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("AbilitySystem"));
-}
-
-UAbilitySystemComponent* AKiteCharacter::GetAbilitySystemComponent() const
-{
-	return AbilitySystem;
+	KiteActionComponent = ObjectInitializer.CreateDefaultSubobject<UKiteActionComponent>(this, TEXT("KiteActionComponent"));
 }
 
 // Called when the game starts or when spawned
@@ -72,20 +69,20 @@ void AKiteCharacter::BeginPlay()
 		}
 	}
 
-	//添加技能给ASC
-	if (AbilitySystem)
-	{
-		// 本地控制的角色才添加技能
-		if(HasAuthority())
-		{
-			for(const auto& AbilityClass : Abilities)
-			{
-				AbilitySystem->GiveAbility(FGameplayAbilitySpec(AbilityClass, 1, 0));
-			}
-		}
-		// 初始化ASC
-		AbilitySystem->InitAbilityActorInfo(this, this);
-	}
+	// //添加技能给ASC
+	// if (AbilitySystem)
+	// {
+	// 	// 本地控制的角色才添加技能
+	// 	if(HasAuthority())
+	// 	{
+	// 		for(const auto& AbilityClass : Abilities)
+	// 		{
+	// 			AbilitySystem->GiveAbility(FGameplayAbilitySpec(AbilityClass, 1, 0));
+	// 		}
+	// 	}
+	// 	// 初始化ASC
+	// 	AbilitySystem->InitAbilityActorInfo(this, this);
+	// }
 }
 
 // // Called every frame
@@ -100,23 +97,24 @@ void AKiteCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	// Set up action bindings
-	if (UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent)) {
-		//Looking
-		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AKiteCharacter::Look);
-		//Moving
-		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AKiteCharacter::Move);
-		//Jumping
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
-		
-		EnhancedInputComponent->BindAction(MeleeAttackAction, ETriggerEvent::Started, this, &AKiteCharacter::MeleeAttack);
-	}
+	KiteActionComponent->InitializePlayerInput(PlayerInputComponent);
+	
+	// // Set up action bindings
+	// if (UKiteInputComponent* KiteInputComponent = CastChecked<UKiteInputComponent>(PlayerInputComponent)) {
+	// 	//Looking
+	// 	KiteInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ThisClass::Look);
+	// 	//Moving
+	// 	KiteInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ThisClass::Move);
+	// 	//Jumping
+	// 	KiteInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ThisClass::Jump);
+	// 	KiteInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ThisClass::StopJumping);
+	// 	
+	// 	KiteInputComponent->BindAction(MeleeAttackAction, ETriggerEvent::Started, this, &ThisClass::MeleeAttack);
+	// }
 }
 
 void AKiteCharacter::Look(const FInputActionValue& Value)
 {
-	// UE_LOG(LogTemp, Log, TEXT("~Look"));
 	// input is a Vector2D
 	FVector2D LookAxisVector = Value.Get<FVector2D>();
 
@@ -133,9 +131,6 @@ void AKiteCharacter::Move(const FInputActionValue& Value)
 	// input is a Vector2D
 	FVector2D MovementVector = Value.Get<FVector2D>();
 
-	// MeleeAttackAction->DestroyNonNativeProperties();
-	kwarn("MeleeAttackAction = nullptr");
-
 	if (Controller != nullptr)
 	{
 		// find out which way is forward
@@ -144,14 +139,9 @@ void AKiteCharacter::Move(const FInputActionValue& Value)
 
 		// get forward vector
 		const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-		// 打印ForwardDirection
-		// UE_LOG(LogTemp, Log, TEXT("~ForwardDirection, X, y, z: %f %f %f"), ForwardDirection.X, ForwardDirection.Y, ForwardDirection.Z);
 		
 		// get right vector 
 		const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-		// UE_LOG(LogTemp, Log, TEXT("~RightDirection, X, y, z: %f %f %f"), RightDirection.X, RightDirection.Y, RightDirection.Z);
-		//
-		// UE_LOG(LogTemp, Log, TEXT("~MovementVector X, Y: %f %f"), MovementVector.X, MovementVector.Y);
 		
 		// add movement 
 		AddMovementInput(ForwardDirection, MovementVector.Y);
@@ -161,7 +151,6 @@ void AKiteCharacter::Move(const FInputActionValue& Value)
 
 void AKiteCharacter::MeleeAttack(const FInputActionValue& Value)
 {
-	kwarn("%s", ToCStr(GetClass()->GetName()));
 	K2_MeleeAttack(Value);
 }
 
