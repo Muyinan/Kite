@@ -22,14 +22,14 @@ public:
 public:
 	
 	// Ability sets to grant to this pawn's ability system.
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Lyra|Abilities")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Kite|Abilities")
 	TArray<TObjectPtr<UKiteAbilitySet>> AbilitySets;
 
 	// What mapping of ability tags to use for actions taking by this pawn
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Lyra|Abilities")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Kite|Abilities")
 	TObjectPtr<UKiteAbilityTagRelationshipMapping> TagRelationshipMapping;
 
 	// Input configuration used by player controlled pawns to create input mappings and bind input actions.
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Lyra|Input")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Kite|Input")
 	TObjectPtr<UKiteInputConfig> InputConfig;
 };

@@ -3,8 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AbilitySystemComponent.h"
-#include "GameFramework/Character.h"
+#include "ModularCharacter.h"
 #include "KiteCharacter.generated.h"
 
 class UKiteAbilitySystemComponent;
@@ -15,7 +14,7 @@ class UInputAction;
 class UKiteActionComponent;
 
 UCLASS(config=Game)
-class KITE_API AKiteCharacter : public ACharacter
+class KITE_API AKiteCharacter : public AModularCharacter
 {
 	GENERATED_BODY()
 

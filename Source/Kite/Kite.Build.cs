@@ -10,7 +10,7 @@ public class Kite : ModuleRules
 	
 		PublicIncludePaths.AddRange(
 			new string[] {
-				"Kite"
+				"Kite",
 			}
 		);
 		
@@ -25,14 +25,16 @@ public class Kite : ModuleRules
 				"GameplayAbilities", 
 				"GameplayTasks", 
 				"GameplayTags",
-				"ModularGameplay"
+				"ModularGameplay",
+				"ModularGameplayActors",
+				"GameFeatures",
 			});
 
 		PrivateDependencyModuleNames.AddRange(
 			new string[]
 			{
 				"UnLua", 
-				"Lua"
+				"Lua",
 			});
 
 		// Uncomment if you are using Slate UI

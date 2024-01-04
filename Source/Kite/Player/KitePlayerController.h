@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/PlayerController.h"
+#include "ModularPlayerController.h"
 #include "KitePlayerController.generated.h"
 
 class AKitePlayerState;
@@ -12,7 +12,7 @@ class UKiteAbilitySystemComponent;
  * 
  */
 UCLASS()
-class KITE_API AKitePlayerController : public APlayerController
+class KITE_API AKitePlayerController : public AModularPlayerController
 {
 	GENERATED_BODY()
 

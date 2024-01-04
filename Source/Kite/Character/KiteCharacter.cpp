@@ -92,25 +92,27 @@ void AKiteCharacter::BeginPlay()
 //
 // }
 
+static int lookHandle = 0;
 // Called to bind functionality to input
 void AKiteCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 	KiteActionComponent->InitializePlayerInput(PlayerInputComponent);
+
 	
-	// // Set up action bindings
-	// if (UKiteInputComponent* KiteInputComponent = CastChecked<UKiteInputComponent>(PlayerInputComponent)) {
-	// 	//Looking
-	// 	KiteInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ThisClass::Look);
-	// 	//Moving
-	// 	KiteInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ThisClass::Move);
-	// 	//Jumping
-	// 	KiteInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ThisClass::Jump);
-	// 	KiteInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ThisClass::StopJumping);
-	// 	
-	// 	KiteInputComponent->BindAction(MeleeAttackAction, ETriggerEvent::Started, this, &ThisClass::MeleeAttack);
-	// }
+	// Set up action bindings
+	if (UEnhancedInputComponent* KiteInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent)) {
+		//Looking
+		lookHandle = KiteInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ThisClass::Look).GetHandle();
+		//Moving
+		KiteInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ThisClass::Move);
+		//Jumping
+		KiteInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ThisClass::Jump);
+		KiteInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ThisClass::StopJumping);
+		
+		KiteInputComponent->BindAction(MeleeAttackAction, ETriggerEvent::Started, this, &ThisClass::MeleeAttack);
+	}
 }
 
 void AKiteCharacter::Look(const FInputActionValue& Value)
@@ -131,6 +133,16 @@ void AKiteCharacter::Move(const FInputActionValue& Value)
 	// input is a Vector2D
 	FVector2D MovementVector = Value.Get<FVector2D>();
 
+	if (lookHandle != 0)
+	{
+		UEnhancedInputComponent* KiteInputComponent = FindComponentByClass<UEnhancedInputComponent>();
+		if (KiteInputComponent)
+		{
+			kwarn("find!");
+			KiteInputComponent->RemoveBindingByHandle(lookHandle);
+		}
+	}
+	
 	if (Controller != nullptr)
 	{
 		// find out which way is forward

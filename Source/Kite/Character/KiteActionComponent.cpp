@@ -7,6 +7,8 @@
 #include "Input/KiteInputConfig.h"
 #include "Player/KiteLocalPlayer.h"
 
+// gamefeature加载接口
+// UGameFeaturesSubsystem::Get().LoadAndActivateGameFeaturePlugin();
 
 void UKiteActionComponent::InitializePlayerInput(UInputComponent* PlayerInputComponent)
 {
@@ -50,25 +52,25 @@ void UKiteActionComponent::InitializePlayerInput(UInputComponent* PlayerInputCom
 	// 		}
 	// 	}
 	//
-	// 	// The Lyra Input Component has some additional functions to map Gameplay Tags to an Input Action.
+	// 	// The Kite Input Component has some additional functions to map Gameplay Tags to an Input Action.
 	// 	// If you want this functionality but still want to change your input component class, make it a subclass
-	// 	// of the ULyraInputComponent or modify this component accordingly.
-	// 	ULyraInputComponent* LyraIC = Cast<ULyraInputComponent>(PlayerInputComponent);
-	// 	if (ensureMsgf(LyraIC, TEXT("Unexpected Input Component class! The Gameplay Abilities will not be bound to their inputs. Change the input component to ULyraInputComponent or a subclass of it.")))
+	// 	// of the UKiteInputComponent or modify this component accordingly.
+	// 	UKiteInputComponent* KiteIC = Cast<UKiteInputComponent>(PlayerInputComponent);
+	// 	if (ensureMsgf(KiteIC, TEXT("Unexpected Input Component class! The Gameplay Abilities will not be bound to their inputs. Change the input component to UKiteInputComponent or a subclass of it.")))
 	// 	{
 	// 		// Add the key mappings that may have been set by the player
-	// 		LyraIC->AddInputMappings(InputConfig, Subsystem);
+	// 		KiteIC->AddInputMappings(InputConfig, Subsystem);
 	//
 	// 		// This is where we actually bind and input action to a gameplay tag, which means that Gameplay Ability Blueprints will
 	// 		// be triggered directly by these input actions Triggered events. 
 	// 		TArray<uint32> BindHandles;
-	// 		LyraIC->BindAbilityActions(InputConfig, this, &ThisClass::Input_AbilityInputTagPressed, &ThisClass::Input_AbilityInputTagReleased, /*out*/ BindHandles);
+	// 		KiteIC->BindAbilityActions(InputConfig, this, &ThisClass::Input_AbilityInputTagPressed, &ThisClass::Input_AbilityInputTagReleased, /*out*/ BindHandles);
 	//
-	// 		LyraIC->BindNativeAction(InputConfig, LyraGameplayTags::InputTag_Move, ETriggerEvent::Triggered, this, &ThisClass::Input_Move, /*bLogIfNotFound=*/ false);
-	// 		LyraIC->BindNativeAction(InputConfig, LyraGameplayTags::InputTag_Look_Mouse, ETriggerEvent::Triggered, this, &ThisClass::Input_LookMouse, /*bLogIfNotFound=*/ false);
-	// 		LyraIC->BindNativeAction(InputConfig, LyraGameplayTags::InputTag_Look_Stick, ETriggerEvent::Triggered, this, &ThisClass::Input_LookStick, /*bLogIfNotFound=*/ false);
-	// 		LyraIC->BindNativeAction(InputConfig, LyraGameplayTags::InputTag_Crouch, ETriggerEvent::Triggered, this, &ThisClass::Input_Crouch, /*bLogIfNotFound=*/ false);
-	// 		LyraIC->BindNativeAction(InputConfig, LyraGameplayTags::InputTag_AutoRun, ETriggerEvent::Triggered, this, &ThisClass::Input_AutoRun, /*bLogIfNotFound=*/ false);
+	// 		KiteIC->BindNativeAction(InputConfig, KiteGameplayTags::InputTag_Move, ETriggerEvent::Triggered, this, &ThisClass::Input_Move, /*bLogIfNotFound=*/ false);
+	// 		KiteIC->BindNativeAction(InputConfig, KiteGameplayTags::InputTag_Look_Mouse, ETriggerEvent::Triggered, this, &ThisClass::Input_LookMouse, /*bLogIfNotFound=*/ false);
+	// 		KiteIC->BindNativeAction(InputConfig, KiteGameplayTags::InputTag_Look_Stick, ETriggerEvent::Triggered, this, &ThisClass::Input_LookStick, /*bLogIfNotFound=*/ false);
+	// 		KiteIC->BindNativeAction(InputConfig, KiteGameplayTags::InputTag_Crouch, ETriggerEvent::Triggered, this, &ThisClass::Input_Crouch, /*bLogIfNotFound=*/ false);
+	// 		KiteIC->BindNativeAction(InputConfig, KiteGameplayTags::InputTag_AutoRun, ETriggerEvent::Triggered, this, &ThisClass::Input_AutoRun, /*bLogIfNotFound=*/ false);
 	// 	}
 	// }
 	//
