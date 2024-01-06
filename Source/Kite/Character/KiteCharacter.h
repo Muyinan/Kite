@@ -11,7 +11,7 @@ class USpringArmComponent;
 class UCameraComponent;
 class UInputMappingContext;
 class UInputAction;
-class UKiteActionComponent;
+class UKiteDefaultPawnComponent;
 
 UCLASS(config=Game)
 class KITE_API AKiteCharacter : public AModularCharacter
@@ -26,25 +26,25 @@ public:
 	// virtual void Tick(float DeltaTime) override;
 
 	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	// virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	
-	/** Called for looking input */
-	void Look(const FInputActionValue& Value);
-	
-	/** Called for movement input */
-	void Move(const FInputActionValue& Value);
-	
-	void MeleeAttack(const FInputActionValue& Value);
-
-	// UFUNCTION()
-	// void OnRep_CurrentHealth();
-
-	UFUNCTION(BlueprintImplementableEvent)
-	void K2_MeleeAttack(const FInputActionValue& Value);
+	// /** Called for looking input */
+	// void Look(const FInputActionValue& Value);
+	//
+	// /** Called for movement input */
+	// void Move(const FInputActionValue& Value);
+	//
+	// void MeleeAttack(const FInputActionValue& Value);
+	//
+	// // UFUNCTION()
+	// // void OnRep_CurrentHealth();
+	//
+	// UFUNCTION(BlueprintImplementableEvent)
+	// void K2_MeleeAttack(const FInputActionValue& Value);
 	
 public:
 
@@ -62,6 +62,11 @@ protected:
 	// TMap<TPair<TObjectPtr<UInputAction>, TObjectPtr<UGameplayAbility>>, FKiteActionAbilityData*> AbilityMap;
 	// TMap<FString, FKiteActionAbilityData> AbilityMap;
 
+protected:
+	
+	UPROPERTY()
+	TObjectPtr<UKiteDefaultPawnComponent> DefaultPawnComponent;
+	
 private:
 	/** Camera boom positioning the camera behind the character */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
@@ -71,24 +76,21 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UCameraComponent> FollowCamera;
 
-	/** MappingContext */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UInputMappingContext> DefaultMappingContext;
-
-	/** Look Input Action */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UInputAction> LookAction;
-
-	/** Look Input Action */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UInputAction> MoveAction;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UInputAction> JumpAction;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UInputAction> MeleeAttackAction;
-
-	UPROPERTY()
-	TObjectPtr<UKiteActionComponent> KiteActionComponent;
+	// /** MappingContext */
+	// UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	// TObjectPtr<UInputMappingContext> DefaultMappingContext;
+	//
+	// /** Look Input Action */
+	// UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	// TObjectPtr<UInputAction> LookAction;
+	//
+	// /** Look Input Action */
+	// UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	// TObjectPtr<UInputAction> MoveAction;
+	//
+	// UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	// TObjectPtr<UInputAction> JumpAction;
+	//
+	// UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	// TObjectPtr<UInputAction> MeleeAttackAction;
 };

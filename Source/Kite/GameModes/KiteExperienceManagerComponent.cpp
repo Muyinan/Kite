@@ -13,6 +13,7 @@
 #include "Engine/StreamableManager.h"
 #include "Settings/KiteSettingsLocal.h"
 #include "System/KiteAssetManager.h"
+#include "Net/UnrealNetwork.h"
 
 namespace KiteConsoleVariables
 {
@@ -44,7 +45,8 @@ UKiteExperienceManagerComponent::UKiteExperienceManagerComponent(const FObjectIn
 
 bool UKiteExperienceManagerComponent::IsExperienceLoaded() const
 {
-	return (LoadState == EKiteExperienceLoadState::Loaded) && (CurrentExperience != nullptr);
+	bool bRes = (LoadState == EKiteExperienceLoadState::Loaded) && (CurrentExperience != nullptr);
+	return bRes;
 }
 
 const UKiteExperienceDefinition* UKiteExperienceManagerComponent::GetCurrentExperienceChecked() const
@@ -52,6 +54,20 @@ const UKiteExperienceDefinition* UKiteExperienceManagerComponent::GetCurrentExpe
 	check(LoadState == EKiteExperienceLoadState::Loaded);
 	check(CurrentExperience != nullptr);
 	return CurrentExperience;
+}
+
+void UKiteExperienceManagerComponent::SetCurrentExperience(FPrimaryAssetId ExperienceId)
+{
+	UKiteAssetManager& AssetManager = UKiteAssetManager::Get();
+	FSoftObjectPath AssetPath = AssetManager.GetPrimaryAssetPath(ExperienceId);
+	TSubclassOf<UKiteExperienceDefinition> AssetClass = Cast<UClass>(AssetPath.TryLoad());
+	check(AssetClass);
+	const UKiteExperienceDefinition* Experience = GetDefault<UKiteExperienceDefinition>(AssetClass);
+
+	check(Experience != nullptr);
+	check(CurrentExperience == nullptr);
+	CurrentExperience = Experience;
+	StartExperienceLoad();
 }
 
 void UKiteExperienceManagerComponent::CallOrRegister_OnExperienceLoaded(FOnKiteExperienceLoaded::FDelegate&& Delegate)
@@ -308,4 +324,11 @@ void UKiteExperienceManagerComponent::OnExperienceFullLoadCompleted()
 #if !UE_SERVER
 	UKiteSettingsLocal::Get()->OnExperienceLoaded();
 #endif
+}
+
+void UKiteExperienceManagerComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ThisClass, CurrentExperience);
 }

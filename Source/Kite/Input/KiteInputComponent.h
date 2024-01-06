@@ -19,14 +19,17 @@ class KITE_API UKiteInputComponent : public UEnhancedInputComponent
 public:
 
 	UKiteInputComponent(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
+
+	void AddInputMappings(const UKiteInputConfig* InputConfig, class UEnhancedInputLocalPlayerSubsystem* InputSubsystem) const;
+	void RemoveInputMappings(const UKiteInputConfig* InputConfig, UEnhancedInputLocalPlayerSubsystem* InputSubsystem) const;
 	
+	void RemoveBinds(TArray<uint32>& BindHandles);	
+
 	template<class UserClass, typename FuncType>
 	void BindNativeAction(const UKiteInputConfig* InputConfig, const FGameplayTag& InputTag, ETriggerEvent TriggerEvent, UserClass* Object, FuncType Func, bool bLogIfNotFound);
 
 	template<class UserClass, typename PressedFuncType, typename ReleasedFuncType>
 	void BindAbilityActions(const UKiteInputConfig* InputConfig, UserClass* Object, PressedFuncType PressedFunc, ReleasedFuncType ReleasedFunc, TArray<uint32>& BindHandles);
-
-	void RemoveBinds(TArray<uint32>& BindHandles);	
 };
 
 template <class UserClass, typename FuncType>

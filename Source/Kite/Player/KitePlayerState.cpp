@@ -10,6 +10,7 @@
 #include "Components/GameFrameworkComponentManager.h"
 #include "GameModes/KiteExperienceManagerComponent.h"
 #include "GameModes/KiteGameModeBase.h"
+#include "Net/UnrealNetwork.h"
 
 const FName AKitePlayerState::NAME_KiteAbilityReady("KiteAbilitiesReady");
 
@@ -77,6 +78,13 @@ void AKitePlayerState::SetPawnData(const UKitePawnData* InPawnData)
 	UGameFrameworkComponentManager::SendGameFrameworkComponentExtensionEvent(this, NAME_KiteAbilityReady);
 	
 	ForceNetUpdate();
+}
+
+void AKitePlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ThisClass, PawnData);
 }
 
 void AKitePlayerState::OnRep_PawnData()

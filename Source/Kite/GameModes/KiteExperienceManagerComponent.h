@@ -36,6 +36,8 @@ class KITE_API UKiteExperienceManagerComponent : public UGameStateComponent
 
 public:
 	UKiteExperienceManagerComponent(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
+
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	
 	// Returns true if the experience is fully loaded
 	bool IsExperienceLoaded() const;
@@ -44,6 +46,9 @@ public:
 	// (i.e., if you called it too soon)
 	const UKiteExperienceDefinition* GetCurrentExperienceChecked() const;
 
+	// Tries to set the current experience, either a UI or gameplay one
+	void SetCurrentExperience(FPrimaryAssetId ExperienceId);
+	
 	// Ensures the delegate is called once the experience has been loaded
 	// If the experience has already loaded, calls the delegate immediately
 	void CallOrRegister_OnExperienceLoaded(FOnKiteExperienceLoaded::FDelegate&& Delegate);
@@ -58,10 +63,8 @@ private:
 	void OnExperienceFullLoadCompleted();
 	
 private:
-
-	// TODO，不注释掉会编译报错
-	// UPROPERTY(ReplicatedUsing=OnRep_CurrentExperience)
-	UPROPERTY()
+	
+	UPROPERTY(ReplicatedUsing=OnRep_CurrentExperience)
 	TObjectPtr<const UKiteExperienceDefinition> CurrentExperience;
 	
 	EKiteExperienceLoadState LoadState = EKiteExperienceLoadState::Unloaded;

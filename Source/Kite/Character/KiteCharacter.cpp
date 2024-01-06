@@ -3,15 +3,11 @@
 
 #include "KiteCharacter.h"
 
-#include "EnhancedInputComponent.h"
-#include "EnhancedInputSubsystems.h"
-#include "KiteActionComponent.h"
+#include "KiteDefaultPawnComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
-#include "Common/KiteMacros.h"
-#include "Input/KiteInputComponent.h"
 
 
 // Sets default values
@@ -52,7 +48,7 @@ AKiteCharacter::AKiteCharacter(const FObjectInitializer& ObjectInitializer)
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
 	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 
-	KiteActionComponent = ObjectInitializer.CreateDefaultSubobject<UKiteActionComponent>(this, TEXT("KiteActionComponent"));
+	DefaultPawnComponent = ObjectInitializer.CreateDefaultSubobject<UKiteDefaultPawnComponent>(this, TEXT("DefaultPawnComponent"));
 }
 
 // Called when the game starts or when spawned
@@ -60,14 +56,19 @@ void AKiteCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	//Add Input Mapping Context
-	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
+	if (InputComponent)
 	{
-		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
-		{
-			Subsystem->AddMappingContext(DefaultMappingContext, 0);
-		}
+		DefaultPawnComponent->InitializePlayerInput(InputComponent);
 	}
+
+	// //Add Input Mapping Context
+	// if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
+	// {
+	// 	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
+	// 	{
+	// 		Subsystem->AddMappingContext(DefaultMappingContext, 0);
+	// 	}
+	// }
 
 	// //添加技能给ASC
 	// if (AbilitySystem)
@@ -92,79 +93,67 @@ void AKiteCharacter::BeginPlay()
 //
 // }
 
-static int lookHandle = 0;
 // Called to bind functionality to input
-void AKiteCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
+// void AKiteCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+// {
+// 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	KiteActionComponent->InitializePlayerInput(PlayerInputComponent);
-
+ 
 	
-	// Set up action bindings
-	if (UEnhancedInputComponent* KiteInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent)) {
-		//Looking
-		lookHandle = KiteInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ThisClass::Look).GetHandle();
-		//Moving
-		KiteInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ThisClass::Move);
-		//Jumping
-		KiteInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ThisClass::Jump);
-		KiteInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ThisClass::StopJumping);
-		
-		KiteInputComponent->BindAction(MeleeAttackAction, ETriggerEvent::Started, this, &ThisClass::MeleeAttack);
-	}
-}
+	// // Set up action bindings
+	// if (UEnhancedInputComponent* KiteInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent)) {
+	// 	//Looking
+	// 	lookHandle = KiteInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ThisClass::Look).GetHandle();
+	// 	//Moving
+	// 	KiteInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ThisClass::Move);
+	// 	//Jumping
+	// 	KiteInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ThisClass::Jump);
+	// 	KiteInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ThisClass::StopJumping);
+	// 	
+	// 	KiteInputComponent->BindAction(MeleeAttackAction, ETriggerEvent::Started, this, &ThisClass::MeleeAttack);
+	// }
+// }
 
-void AKiteCharacter::Look(const FInputActionValue& Value)
-{
-	// input is a Vector2D
-	FVector2D LookAxisVector = Value.Get<FVector2D>();
+// void AKiteCharacter::Look(const FInputActionValue& Value)
+// {
+// 	// input is a Vector2D
+// 	FVector2D LookAxisVector = Value.Get<FVector2D>();
+//
+// 	if (Controller != nullptr)
+// 	{
+// 		// add yaw and pitch input to controller
+// 		AddControllerYawInput(LookAxisVector.X);
+// 		AddControllerPitchInput(LookAxisVector.Y);
+// 	}
+// }
+//
+// void AKiteCharacter::Move(const FInputActionValue& Value)
+// {
+// 	// input is a Vector2D
+// 	FVector2D MovementVector = Value.Get<FVector2D>();
+// 	
+// 	if (Controller != nullptr)
+// 	{
+// 		// find out which way is forward
+// 		const FRotator Rotation = Controller->GetControlRotation();
+// 		const FRotator YawRotation(0, Rotation.Yaw, 0);
+//
+// 		// get forward vector
+// 		const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+// 		
+// 		// get right vector 
+// 		const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+// 		
+// 		// add movement 
+// 		AddMovementInput(ForwardDirection, MovementVector.Y);
+// 		AddMovementInput(RightDirection, MovementVector.X);
+// 	}
+// }
 
-	if (Controller != nullptr)
-	{
-		// add yaw and pitch input to controller
-		AddControllerYawInput(LookAxisVector.X);
-		AddControllerPitchInput(LookAxisVector.Y);
-	}
-}
-
-void AKiteCharacter::Move(const FInputActionValue& Value)
-{
-	// input is a Vector2D
-	FVector2D MovementVector = Value.Get<FVector2D>();
-
-	if (lookHandle != 0)
-	{
-		UEnhancedInputComponent* KiteInputComponent = FindComponentByClass<UEnhancedInputComponent>();
-		if (KiteInputComponent)
-		{
-			kwarn("find!");
-			KiteInputComponent->RemoveBindingByHandle(lookHandle);
-		}
-	}
-	
-	if (Controller != nullptr)
-	{
-		// find out which way is forward
-		const FRotator Rotation = Controller->GetControlRotation();
-		const FRotator YawRotation(0, Rotation.Yaw, 0);
-
-		// get forward vector
-		const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-		
-		// get right vector 
-		const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-		
-		// add movement 
-		AddMovementInput(ForwardDirection, MovementVector.Y);
-		AddMovementInput(RightDirection, MovementVector.X);
-	}
-}
-
-void AKiteCharacter::MeleeAttack(const FInputActionValue& Value)
-{
-	K2_MeleeAttack(Value);
-}
+// void AKiteCharacter::MeleeAttack(const FInputActionValue& Value)
+// {
+// 	K2_MeleeAttack(Value);
+// }
 
 // void AKiteCharacter::OnRep_CurrentHealth()
 // {

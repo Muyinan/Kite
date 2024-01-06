@@ -20,6 +20,8 @@ class KITE_API AKitePlayerState : public AModularPlayerState, public IAbilitySys
 public:
 	
 	AKitePlayerState(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
+
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	
 	UFUNCTION(BlueprintCallable, Category = "Kite|PlayerState")
 	UKiteAbilitySystemComponent* GetKiteAbilitySystemComponent() const { return AbilitySystemComponent; }
@@ -33,7 +35,7 @@ public:
 	const T* GetPawnData() const { return Cast<T>(PawnData); }
 
 	void SetPawnData(const UKitePawnData* InPawnData);
-
+	
 	static const FName NAME_KiteAbilityReady;
 
 protected:
@@ -42,13 +44,11 @@ protected:
 	void OnRep_PawnData();
 
 private:
-	void OnExperienceLoaded(const UKiteExperienceDefinition* CurrentExperience);
+	void OnExperienceLoaded(const class UKiteExperienceDefinition* CurrentExperience);
 	
 protected:
-
-	// TODO，不注释掉会编译报错
-	// UPROPERTY(ReplicatedUsing = OnRep_PawnData)
-	UPROPERTY()
+	
+	UPROPERTY(ReplicatedUsing = OnRep_PawnData)
 	TObjectPtr<const UKitePawnData> PawnData;
 	
 private:
