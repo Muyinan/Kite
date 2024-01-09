@@ -136,10 +136,13 @@ void UKiteDefaultPawnComponent::InitializePlayerInput(UInputComponent* PlayerInp
 
 	if (const UKiteInputConfig* InputConfig = PawnData->InputConfig)
 	{
-		if (SPtr_DefaultMappingContext)
+		if (!SPtr_DefaultMappingContext.IsNull())
 		{
-			UInputMappingContext* DefaultMappingContext  = Cast<UInputMappingContext>(SPtr_DefaultMappingContext.ToSoftObjectPath().TryLoad());
-			Subsystem->AddMappingContext(DefaultMappingContext, 0);
+			if (!SPtr_DefaultMappingContext.IsValid())
+			{
+				SPtr_DefaultMappingContext.ToSoftObjectPath().TryLoad();
+			}
+			Subsystem->AddMappingContext(SPtr_DefaultMappingContext.Get(), 0);
 		}
 	
 		// The Kite Input Component has some additional functions to map Gameplay Tags to an Input Action.

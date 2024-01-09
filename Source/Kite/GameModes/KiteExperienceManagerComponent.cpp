@@ -58,6 +58,7 @@ const UKiteExperienceDefinition* UKiteExperienceManagerComponent::GetCurrentExpe
 
 void UKiteExperienceManagerComponent::SetCurrentExperience(FPrimaryAssetId ExperienceId)
 {
+	kwarn("~ UKiteExperienceManagerComponent SetCurrentExperience");
 	UKiteAssetManager& AssetManager = UKiteAssetManager::Get();
 	FSoftObjectPath AssetPath = AssetManager.GetPrimaryAssetPath(ExperienceId);
 	TSubclassOf<UKiteExperienceDefinition> AssetClass = Cast<UClass>(AssetPath.TryLoad());
@@ -79,6 +80,18 @@ void UKiteExperienceManagerComponent::CallOrRegister_OnExperienceLoaded(FOnKiteE
 	else
 	{
 		OnExperienceLoaded.Add(MoveTemp(Delegate));
+	}
+}
+
+void UKiteExperienceManagerComponent::CallOrRegister_OnExperienceLoaded_LowPriority(FOnKiteExperienceLoaded::FDelegate&& Delegate)
+{
+	if (IsExperienceLoaded())
+	{
+		Delegate.Execute(CurrentExperience);
+	}
+	else
+	{
+		OnExperienceLoaded_LowPriority.Add(MoveTemp(Delegate));
 	}
 }
 

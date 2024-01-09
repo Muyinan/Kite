@@ -5,9 +5,12 @@
 
 #include "KiteDefaultPawnComponent.h"
 #include "Camera/CameraComponent.h"
+#include "Common/KiteMacros.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "GameModes/KiteExperienceManagerComponent.h"
+#include "GameModes/KiteGameModeBase.h"
 
 
 // Sets default values
@@ -56,9 +59,13 @@ void AKiteCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	kwarn("~ AKiteCharacter BeginPlay %s, ", *GetNameSafe(this));
+	
 	if (InputComponent)
 	{
-		DefaultPawnComponent->InitializePlayerInput(InputComponent);
+		UKiteExperienceManagerComponent* ExperienceComponent = GetWorld()->GetGameState()->FindComponentByClass<UKiteExperienceManagerComponent>();
+		check(ExperienceComponent);
+		ExperienceComponent->CallOrRegister_OnExperienceLoaded_LowPriority(FOnKiteExperienceLoaded::FDelegate::CreateUObject(this, &ThisClass::Init));
 	}
 
 	// //Add Input Mapping Context
@@ -84,6 +91,22 @@ void AKiteCharacter::BeginPlay()
 	// 	// 初始化ASC
 	// 	AbilitySystem->InitAbilityActorInfo(this, this);
 	// }
+}
+
+void AKiteCharacter::Init(const UKiteExperienceDefinition* ExperienceDefinition)
+{
+	if (AKiteGameModeBase* KiteGameMode = GetWorld()->GetAuthGameMode<AKiteGameModeBase>())
+	{
+		if (const UKitePawnData* NewPawnData = KiteGameMode->GetPawnDataForController(GetController()))
+		{
+			DefaultPawnComponent->SetPawnData(NewPawnData);
+			DefaultPawnComponent->InitializePlayerInput(InputComponent);
+		}
+		else
+		{
+			UE_LOG(LogKite, Error, TEXT("AKiteCharacter::Init(): Unable to find PawnData to initialize player AKiteCharacter [%s]!"), *GetNameSafe(this));
+		}
+	}
 }
 
 // // Called every frame

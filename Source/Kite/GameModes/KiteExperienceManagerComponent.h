@@ -52,7 +52,8 @@ public:
 	// Ensures the delegate is called once the experience has been loaded
 	// If the experience has already loaded, calls the delegate immediately
 	void CallOrRegister_OnExperienceLoaded(FOnKiteExperienceLoaded::FDelegate&& Delegate);
-	
+
+	void CallOrRegister_OnExperienceLoaded_LowPriority(FOnKiteExperienceLoaded::FDelegate&& Delegate);
 private:
 	UFUNCTION()
 	void OnRep_CurrentExperience();

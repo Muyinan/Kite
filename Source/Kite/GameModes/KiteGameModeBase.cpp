@@ -66,55 +66,59 @@ const UKitePawnData* AKiteGameModeBase::GetPawnDataForController(const AControll
 
 void AKiteGameModeBase::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)
 {
+	kwarn("~ InitGame");
 	Super::InitGame(MapName, Options, ErrorMessage);
 
-	// Wait for the next frame to give time to initialize startup settings
+	// Wait for the next frame to give time to initialize startup settings,
+	// 业务数据的初始化得在引擎类的初始化之后，不然设置数据时GameState等类还没初始化
 	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ThisClass::HandleMatchAssignment);
 	// HandleMatchAssignment();
 }
 
-APawn* AKiteGameModeBase::SpawnDefaultPawnAtTransform_Implementation(AController* NewPlayer, const FTransform& SpawnTransform)
-{
-	FActorSpawnParameters SpawnInfo;
-	SpawnInfo.Instigator = GetInstigator();
-	SpawnInfo.ObjectFlags |= RF_Transient;	// Never save the default player pawns into a map.
-	SpawnInfo.bDeferConstruction = true;
-
-	if (UClass* PawnClass = GetDefaultPawnClassForController(NewPlayer))
-	{
-		if (APawn* SpawnedPawn = GetWorld()->SpawnActor<APawn>(PawnClass, SpawnTransform, SpawnInfo))
-		{
-			if (UKiteDefaultPawnComponent* DefaultPawnComp = UKiteDefaultPawnComponent::FindDefaultPawnComponent(SpawnedPawn))
-			{
-				if (const UKitePawnData* PawnData = GetPawnDataForController(NewPlayer))
-				{
-					DefaultPawnComp->SetPawnData(PawnData);
-				}
-				else
-				{
-					UE_LOG(LogKite, Error, TEXT("Game mode was unable to set PawnData on the spawned pawn [%s]."), *GetNameSafe(SpawnedPawn));
-				}
-			}
-
-			SpawnedPawn->FinishSpawning(SpawnTransform);
-
-			return SpawnedPawn;
-		}
-		else
-		{
-			UE_LOG(LogKite, Error, TEXT("Game mode was unable to spawn Pawn of class [%s] at [%s]."), *GetNameSafe(PawnClass), *SpawnTransform.ToHumanReadableString());
-		}
-	}
-	else
-	{
-		UE_LOG(LogKite, Error, TEXT("Game mode was unable to spawn Pawn due to NULL pawn class."));
-	}
-
-	return nullptr;
-}
+// APawn* AKiteGameModeBase::SpawnDefaultPawnAtTransform_Implementation(AController* NewPlayer, const FTransform& SpawnTransform)
+// {
+// 	kwarn("~ SpawnDefaultPawnAtTransform_Implementation");
+// 	FActorSpawnParameters SpawnInfo;
+// 	SpawnInfo.Instigator = GetInstigator();
+// 	SpawnInfo.ObjectFlags |= RF_Transient;	// Never save the default player pawns into a map.
+// 	SpawnInfo.bDeferConstruction = true;
+//
+// 	if (UClass* PawnClass = GetDefaultPawnClassForController(NewPlayer))
+// 	{
+// 		if (APawn* SpawnedPawn = GetWorld()->SpawnActor<APawn>(PawnClass, SpawnTransform, SpawnInfo))
+// 		{
+// 			if (UKiteDefaultPawnComponent* DefaultPawnComp = UKiteDefaultPawnComponent::FindDefaultPawnComponent(SpawnedPawn))
+// 			{
+// 				if (const UKitePawnData* PawnData = GetPawnDataForController(NewPlayer))
+// 				{
+// 					DefaultPawnComp->SetPawnData(PawnData);
+// 				}
+// 				else
+// 				{
+// 					UE_LOG(LogKite, Error, TEXT("Game mode was unable to set PawnData on the spawned pawn [%s]."), *GetNameSafe(SpawnedPawn));
+// 				}
+// 			}
+//
+// 			SpawnedPawn->FinishSpawning(SpawnTransform);
+//
+// 			return SpawnedPawn;
+// 		}
+// 		else
+// 		{
+// 			UE_LOG(LogKite, Error, TEXT("Game mode was unable to spawn Pawn of class [%s] at [%s]."), *GetNameSafe(PawnClass), *SpawnTransform.ToHumanReadableString());
+// 		}
+// 	}
+// 	else
+// 	{
+// 		UE_LOG(LogKite, Error, TEXT("Game mode was unable to spawn Pawn due to NULL pawn class."));
+// 	}
+//
+// 	return nullptr;
+// }
 
 void AKiteGameModeBase::HandleMatchAssignment()
 {
+	kwarn("~ HandleMatchAssignment");
 	FPrimaryAssetId ExperienceId;
 	FString ExperienceIdSource;
 
@@ -198,7 +202,7 @@ void AKiteGameModeBase::OnMatchAssignmentGiven(const FPrimaryAssetId& Experience
 	{
 		UE_LOG(LogKiteExperience, Log, TEXT("Identified experience %s (Source: %s)"), *ExperienceId.ToString(), *ExperienceIdSource);
 
-			UKiteExperienceManagerComponent* ExperienceComponent = GameState->FindComponentByClass<UKiteExperienceManagerComponent>();
+		UKiteExperienceManagerComponent* ExperienceComponent = GameState->FindComponentByClass<UKiteExperienceManagerComponent>();
 		check(ExperienceComponent);
 		ExperienceComponent->SetCurrentExperience(ExperienceId);
 	}

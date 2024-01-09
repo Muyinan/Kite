@@ -31,7 +31,8 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-	
+
+	void Init(const class UKiteExperienceDefinition* ExperienceDefinition);
 	// /** Called for looking input */
 	// void Look(const FInputActionValue& Value);
 	//
@@ -51,7 +52,7 @@ public:
 	// UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = GameplayAbilities)
 	// TArray<TSubclassOf<UGameplayAbility>> Abilities;
 	
-protected:
+// protected:
 	// UPROPERTY(EditDefaultsOnly, Category = "Health")
 	// float MaxHealth;
 	//
@@ -64,7 +65,7 @@ protected:
 
 protected:
 	
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Kite|Pawn")
 	TObjectPtr<UKiteDefaultPawnComponent> DefaultPawnComponent;
 	
 private:
