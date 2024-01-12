@@ -17,4 +17,5 @@ AKiteGameState::AKiteGameState(const FObjectInitializer& ObjectInitializer)
 	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Mixed);
 
 	ExperienceManagerComponent = CreateDefaultSubobject<UKiteExperienceManagerComponent>(TEXT("ExperienceManagerComponent"));
+	ExperienceManagerComponent->SetIsReplicated(true);
 }

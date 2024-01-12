@@ -47,5 +47,5 @@ public:
 
 	// List of additional action sets to compose into this experience
 	UPROPERTY(EditDefaultsOnly, Category=Gameplay)
-	TArray<TObjectPtr<UKiteExperienceActionSet>> ActionSets;
+	TArray<TObjectPtr<class UKiteExperienceActionSet>> ActionSets;
 };

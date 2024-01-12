@@ -9,8 +9,10 @@
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "GameModes/KiteExperienceDefinition.h"
 #include "GameModes/KiteExperienceManagerComponent.h"
 #include "GameModes/KiteGameModeBase.h"
+#include "GameModes/KiteGameState.h"
 
 
 // Sets default values
@@ -95,16 +97,12 @@ void AKiteCharacter::BeginPlay()
 
 void AKiteCharacter::Init(const UKiteExperienceDefinition* ExperienceDefinition)
 {
-	if (AKiteGameModeBase* KiteGameMode = GetWorld()->GetAuthGameMode<AKiteGameModeBase>())
+	if (AKiteGameState* KiteGameState = GetWorld()->GetGameState<AKiteGameState>())
 	{
-		if (const UKitePawnData* NewPawnData = KiteGameMode->GetPawnDataForController(GetController()))
+		if ( UKiteExperienceManagerComponent* EMC = KiteGameState->GetExperienceManagerComponent())
 		{
-			DefaultPawnComponent->SetPawnData(NewPawnData);
+			DefaultPawnComponent->SetPawnData(EMC->GetCurrentExperienceChecked()->DefaultPawnData);
 			DefaultPawnComponent->InitializePlayerInput(InputComponent);
-		}
-		else
-		{
-			UE_LOG(LogKite, Error, TEXT("AKiteCharacter::Init(): Unable to find PawnData to initialize player AKiteCharacter [%s]!"), *GetNameSafe(this));
 		}
 	}
 }
