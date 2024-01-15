@@ -183,7 +183,7 @@ void UKiteDefaultPawnComponent::SetPawnData(const UKitePawnData* InPawnData)
 
 	APawn* Pawn = GetPawnChecked<APawn>();
 
-	if (Pawn->GetLocalRole() != ROLE_Authority)
+	if (!Pawn->IsLocallyControlled())
 	{
 		return;
 	}

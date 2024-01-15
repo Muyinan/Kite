@@ -66,7 +66,7 @@ const UKitePawnData* AKiteGameModeBase::GetPawnDataForController(const AControll
 
 void AKiteGameModeBase::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)
 {
-	kwarn("~ InitGame");
+	kwarn("InitGame");
 	Super::InitGame(MapName, Options, ErrorMessage);
 
 	// Wait for the next frame to give time to initialize startup settings,
@@ -77,7 +77,7 @@ void AKiteGameModeBase::InitGame(const FString& MapName, const FString& Options,
 
 // APawn* AKiteGameModeBase::SpawnDefaultPawnAtTransform_Implementation(AController* NewPlayer, const FTransform& SpawnTransform)
 // {
-// 	kwarn("~ SpawnDefaultPawnAtTransform_Implementation");
+// 	kwarn("SpawnDefaultPawnAtTransform_Implementation");
 // 	FActorSpawnParameters SpawnInfo;
 // 	SpawnInfo.Instigator = GetInstigator();
 // 	SpawnInfo.ObjectFlags |= RF_Transient;	// Never save the default player pawns into a map.
@@ -118,7 +118,7 @@ void AKiteGameModeBase::InitGame(const FString& MapName, const FString& Options,
 
 void AKiteGameModeBase::HandleMatchAssignment()
 {
-	kwarn("~ HandleMatchAssignment");
+	kwarn("HandleMatchAssignment");
 	FPrimaryAssetId ExperienceId;
 	FString ExperienceIdSource;
 

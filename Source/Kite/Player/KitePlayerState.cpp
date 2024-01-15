@@ -31,7 +31,7 @@ UAbilitySystemComponent* AKitePlayerState::GetAbilitySystemComponent() const
 
 void AKitePlayerState::PostInitializeComponents()
 {
-	kwarn("~ PostInitializeComponents");
+	kwarn("PostInitializeComponents");
 	Super::PostInitializeComponents();
 
 	check(AbilitySystemComponent);
@@ -94,7 +94,7 @@ void AKitePlayerState::OnRep_PawnData()
 
 void AKitePlayerState::OnExperienceLoaded(const UKiteExperienceDefinition* CurrentExperience)
 {
-	kwarn("~ OnExperienceLoaded");
+	kwarn("OnExperienceLoaded");
 	if (AKiteGameModeBase* KiteGameMode = GetWorld()->GetAuthGameMode<AKiteGameModeBase>())
 	{
 		if (const UKitePawnData* NewPawnData = KiteGameMode->GetPawnDataForController(GetOwningController()))

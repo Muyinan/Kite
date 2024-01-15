@@ -58,7 +58,7 @@ const UKiteExperienceDefinition* UKiteExperienceManagerComponent::GetCurrentExpe
 
 void UKiteExperienceManagerComponent::SetCurrentExperience(FPrimaryAssetId ExperienceId)
 {
-	kwarn("~ UKiteExperienceManagerComponent SetCurrentExperience");
+	kwarn("UKiteExperienceManagerComponent SetCurrentExperience");
 	UKiteAssetManager& AssetManager = UKiteAssetManager::Get();
 	FSoftObjectPath AssetPath = AssetManager.GetPrimaryAssetPath(ExperienceId);
 	TSubclassOf<UKiteExperienceDefinition> AssetClass = Cast<UClass>(AssetPath.TryLoad());

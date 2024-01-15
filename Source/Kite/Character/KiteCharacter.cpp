@@ -13,6 +13,7 @@
 #include "GameModes/KiteExperienceManagerComponent.h"
 #include "GameModes/KiteGameModeBase.h"
 #include "GameModes/KiteGameState.h"
+#include "Player/KitePlayerController.h"
 
 
 // Sets default values
@@ -60,10 +61,8 @@ AKiteCharacter::AKiteCharacter(const FObjectInitializer& ObjectInitializer)
 void AKiteCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-
-	kwarn("~ AKiteCharacter BeginPlay %s, ", *GetNameSafe(this));
 	
-	if (InputComponent)
+	if (IsLocallyControlled() && GetController())
 	{
 		UKiteExperienceManagerComponent* ExperienceComponent = GetWorld()->GetGameState()->FindComponentByClass<UKiteExperienceManagerComponent>();
 		check(ExperienceComponent);
@@ -97,12 +96,15 @@ void AKiteCharacter::BeginPlay()
 
 void AKiteCharacter::Init(const UKiteExperienceDefinition* ExperienceDefinition)
 {
-	if (AKiteGameState* KiteGameState = GetWorld()->GetGameState<AKiteGameState>())
-	{
-		if ( UKiteExperienceManagerComponent* EMC = KiteGameState->GetExperienceManagerComponent())
+	if (IsLocallyControlled())
+	{4
+		if (AKiteGameState* KiteGameState = GetWorld()->GetGameState<AKiteGameState>())
 		{
-			DefaultPawnComponent->SetPawnData(EMC->GetCurrentExperienceChecked()->DefaultPawnData);
-			DefaultPawnComponent->InitializePlayerInput(InputComponent);
+			if ( UKiteExperienceManagerComponent* EMC = KiteGameState->GetExperienceManagerComponent())
+			{
+				DefaultPawnComponent->SetPawnData(EMC->GetCurrentExperienceChecked()->DefaultPawnData);
+				DefaultPawnComponent->InitializePlayerInput(GetController()->InputComponent);
+			}
 		}
 	}
 }
