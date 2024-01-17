@@ -68,13 +68,13 @@ void AKitePlayerState::SetPawnData(const UKitePawnData* InPawnData)
 	
 	PawnData = InPawnData;
 
-	for (const UKiteAbilitySet* AbilitySet : PawnData->AbilitySets)
-	{
-		if (AbilitySet)
-		{
-			AbilitySet->GiveToAbilitySystem(AbilitySystemComponent, nullptr);
-		}
-	}
+	// for (const UKiteAbilitySet* AbilitySet : PawnData->AbilitySets)
+	// {
+	// 	if (AbilitySet)
+	// 	{
+	// 		AbilitySet->GiveToAbilitySystem(AbilitySystemComponent, nullptr);
+	// 	}
+	// }
 
 	UGameFrameworkComponentManager::SendGameFrameworkComponentExtensionEvent(this, NAME_KiteAbilityReady);
 	

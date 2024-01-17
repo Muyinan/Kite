@@ -23,8 +23,8 @@ public:
 	// Gets the ability system component used for game wide things
     UFUNCTION(BlueprintCallable, Category = "Kite|GameState")
     UKiteAbilitySystemComponent* GetKiteAbilitySystemComponent() const { return AbilitySystemComponent; }
-
-	TObjectPtr<UKiteExperienceManagerComponent> GetExperienceManagerComponent() const { return ExperienceManagerComponent; }
+	//
+	// TObjectPtr<UKiteExperienceManagerComponent> GetExperienceManagerComponent() const { return ExperienceManagerComponent; }
 private:
 	// Handles loading and managing the current gameplay experience
 	UPROPERTY()

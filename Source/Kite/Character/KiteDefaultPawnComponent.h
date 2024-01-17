@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AbilitySystemInterface.h"
 #include "Components/PawnComponent.h"
 #include "KiteDefaultPawnComponent.generated.h"
 
@@ -11,7 +12,7 @@ struct FGameplayTag;
  * 
  */
 UCLASS()
-class KITE_API UKiteDefaultPawnComponent : public UPawnComponent
+class KITE_API UKiteDefaultPawnComponent : public UPawnComponent, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 
@@ -20,15 +21,26 @@ public:
 	UKiteDefaultPawnComponent(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+	//~ IAbilitySystemInterface
+	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+	//~ End of IAbilitySystemInterface
+	
+	UFUNCTION(BlueprintCallable, Category = "Kite|KiteDefaultPawnComponent")
+	class UKiteAbilitySystemComponent* GetKiteAbilitySystemComponent() const { return AbilitySystemComponent; }
 	
 	virtual void InitializePlayerInput(UInputComponent* PlayerInputComponent);
 
+	virtual void InitializeInnateAbilities();
+	
 	/** Returns the pawn extension component if one exists on the specified actor. */
 	UFUNCTION(BlueprintPure, Category = "Kite|Pawn")
 	static UKiteDefaultPawnComponent* FindDefaultPawnComponent(const AActor* Actor) { return (Actor ? Actor->FindComponentByClass<UKiteDefaultPawnComponent>() : nullptr); }
 
 	void SetPawnData(const class UKitePawnData* InPawnData);
 
+	void OnPawnDataSet();
+	
 	/** The name of the extension event sent via UGameFrameworkComponentManager when ability inputs are ready to bind */
 	static const FName NAME_BindInputsNow;
 

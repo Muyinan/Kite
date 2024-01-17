@@ -97,10 +97,10 @@ void AKiteCharacter::BeginPlay()
 void AKiteCharacter::Init(const UKiteExperienceDefinition* ExperienceDefinition)
 {
 	if (IsLocallyControlled())
-	{4
+	{
 		if (AKiteGameState* KiteGameState = GetWorld()->GetGameState<AKiteGameState>())
 		{
-			if ( UKiteExperienceManagerComponent* EMC = KiteGameState->GetExperienceManagerComponent())
+			if ( UKiteExperienceManagerComponent* EMC = KiteGameState->FindComponentByClass<UKiteExperienceManagerComponent>())
 			{
 				DefaultPawnComponent->SetPawnData(EMC->GetCurrentExperienceChecked()->DefaultPawnData);
 				DefaultPawnComponent->InitializePlayerInput(GetController()->InputComponent);

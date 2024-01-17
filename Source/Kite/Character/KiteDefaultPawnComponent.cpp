@@ -6,6 +6,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "InputMappingContext.h"
 #include "KitePawnData.h"
+#include "AbilitySystem/KiteAbilitySet.h"
 #include "AbilitySystem/KiteAbilitySystemComponent.h"
 #include "Common/KiteGameplayTags.h"
 #include "Common/KiteMacros.h"
@@ -29,8 +30,12 @@ UKiteDefaultPawnComponent::UKiteDefaultPawnComponent(const FObjectInitializer& O
 	SetIsReplicatedByDefault(true);
 
 	PawnData = nullptr;
-	AbilitySystemComponent = nullptr;
 	bReadyToBindInputs = false;
+
+	// 实例化ASC
+	AbilitySystemComponent = ObjectInitializer.CreateDefaultSubobject<UKiteAbilitySystemComponent>(this, TEXT("AbilitySystemComponent"));
+	AbilitySystemComponent->SetIsReplicated(true);
+	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Mixed);
 }
 
 void UKiteDefaultPawnComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -113,6 +118,11 @@ void UKiteDefaultPawnComponent::Input_LookMouse(const FInputActionValue& InputAc
 	}
 }
 
+UAbilitySystemComponent* UKiteDefaultPawnComponent::GetAbilitySystemComponent() const
+{
+	return GetKiteAbilitySystemComponent();
+}
+
 void UKiteDefaultPawnComponent::InitializePlayerInput(UInputComponent* PlayerInputComponent)
 {
 	check(PlayerInputComponent);
@@ -177,6 +187,17 @@ void UKiteDefaultPawnComponent::InitializePlayerInput(UInputComponent* PlayerInp
 	UGameFrameworkComponentManager::SendGameFrameworkComponentExtensionEvent(const_cast<APawn*>(Pawn), NAME_BindInputsNow);
 }
 
+void UKiteDefaultPawnComponent::InitializeInnateAbilities()
+{
+	for (const UKiteAbilitySet* AbilitySet : PawnData->AbilitySets)
+	{
+		if (AbilitySet)
+		{
+			AbilitySet->GiveToAbilitySystem(AbilitySystemComponent, nullptr);
+		}
+	}
+}
+
 void UKiteDefaultPawnComponent::SetPawnData(const UKitePawnData* InPawnData)
 {
 	check(InPawnData);
@@ -199,4 +220,10 @@ void UKiteDefaultPawnComponent::SetPawnData(const UKitePawnData* InPawnData)
 	Pawn->ForceNetUpdate();
 
 	// CheckDefaultInitialization();
+	OnPawnDataSet();
+}
+
+void UKiteDefaultPawnComponent::OnPawnDataSet()
+{
+	InitializeInnateAbilities();
 }

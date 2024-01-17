@@ -21,7 +21,10 @@ public:
 	AKitePlayerState* GetKitePlayerState() const;
 
 	UFUNCTION(BlueprintCallable, Category = "Kite|PlayerController")
-	UKiteAbilitySystemComponent* GetKiteAbilitySystemComponent() const;
+	UKiteAbilitySystemComponent* GetKiteAbilitySystemComponentInPS() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Kite|PlayerController")
+	UKiteAbilitySystemComponent* GetKiteAbilitySystemComponentInDPC() const;
 	
 	// ~ Begin APlayerController interface
 	virtual void PostProcessInput(const float DeltaTime, const bool bGamePaused) override;
