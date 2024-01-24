@@ -8,9 +8,31 @@ public class Kite : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput", "GameplayAbilities", "GameplayTasks", "GameplayTags" });
+		PublicIncludePaths.AddRange(
+			new string[] {
+				"Kite",
+			}
+		);
+		
+		PublicDependencyModuleNames.AddRange(
+			new string[]
+			{
+				"Core", 
+				"CoreUObject", 
+				"Engine", 
+				"InputCore", 
+				"EnhancedInput", 
+				"GameplayAbilities", 
+				"GameplayTasks", 
+				"GameplayTags",
+			});
 
-		PrivateDependencyModuleNames.AddRange(new string[] { "UnLua", "Lua" });
+		PrivateDependencyModuleNames.AddRange(
+			new string[]
+			{
+				"UnLua", 
+				"Lua",
+			});
 
 		// Uncomment if you are using Slate UI
 		// PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });
