@@ -12,6 +12,17 @@ class KITE_API AKiteCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Kite|Input", meta = (AllowPrivateAccess = "true"))
+	TSoftObjectPtr<class UKiteInputConfig> InputConfig;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Kite|Input", meta = (AllowPrivateAccess = "true"))
+	TSoftObjectPtr<class UInputMappingContext> DefaultMappingContext;
+
+	UPROPERTY(VisibleAnywhere, Category = "Kite|Ability")
+	TObjectPtr<class UAbilitySystemComponent> AbilitySystemComponent;
+
+protected:
 	/** Camera boom positioning the camera behind the character */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class USpringArmComponent* CameraBoom;
@@ -19,51 +30,24 @@ class KITE_API AKiteCharacter : public ACharacter
 	/** Follow camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* FollowCamera;
-
-	/** MappingContext */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	class UInputMappingContext* DefaultMappingContext;
-
-	/** Look Input Action */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	class UInputAction* LookAction;
-
-	/** Look Input Action */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	class UInputAction* MoveAction;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UInputAction> JumpAction;
-
-protected:
-	// UPROPERTY(EditDefaultsOnly, Category = "Health")
-	// float MaxHealth;
-	//
-	// UPROPERTY(ReplicatedUsing = OnRep_CurrentHealth)
-	// float CurrentHealth;
-
 public:
 	// Sets default values for this character's properties
 	AKiteCharacter();
 
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
+
+	// Called to bind functionality to input
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
-	// Called every frame
-	// virtual void Tick(float DeltaTime) override;
-
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
-protected:
 	/** Called for looking input */
-	void Look(const FInputActionValue& Value);
+	void Input_LookMouse(const FInputActionValue& Value);
 	
 	/** Called for movement input */
-	void Move(const FInputActionValue& Value);
-
-	// UFUNCTION()
-	// void OnRep_CurrentHealth();
+	void Input_Move(const FInputActionValue& Value);
 };

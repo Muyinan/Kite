@@ -55,6 +55,7 @@ void UKiteInputComponent::BindAbilityActions(const UKiteInputConfig* InputConfig
 		{
 			if (PressedFunc)
 			{
+				// Action.InputTag参数是payload，会作为PressedFunc的参数传入
 				BindHandles.Add(BindAction(Action.InputAction, ETriggerEvent::Triggered, Object, PressedFunc, Action.InputTag).GetHandle());
 			}
 
