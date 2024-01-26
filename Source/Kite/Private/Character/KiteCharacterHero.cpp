@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Character/KiteCharacter.h"
+#include "..\..\Public\Character\KiteCharacterHero.h"
 
 #include "EnhancedInputSubsystems.h"
 #include "Camera/CameraComponent.h"
@@ -13,9 +13,12 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Input/KiteInputComponent.h"
 #include "InputMappingContext.h"
+#include "AbilitySystem/KiteAbilitySet.h"
+#include "AbilitySystem/KiteAbilitySystemComponent.h"
+#include "Player/KitePlayerState.h"
 
-// Sets default values
-AKiteCharacter::AKiteCharacter()
+
+AKiteCharacterHero::AKiteCharacterHero()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -53,21 +56,21 @@ AKiteCharacter::AKiteCharacter()
 }
 
 // Called when the game starts or when spawned
-void AKiteCharacter::BeginPlay()
+void AKiteCharacterHero::BeginPlay()
 {
 	Super::BeginPlay();
 	
 }
 
 // Called every frame
-void AKiteCharacter::Tick(float DeltaTime)
+void AKiteCharacterHero::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
 }
 
 // Called to bind functionality to input
-void AKiteCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+void AKiteCharacterHero::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
@@ -93,7 +96,7 @@ void AKiteCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 				KiteIC->BindNativeAction(InputConfig.Get(), KiteGameplayTags::InputTag_Jump, ETriggerEvent::Completed, this, &ACharacter::StopJumping, /*bLogIfNotFound=*/ false);
 				
 				TArray<uint32> BindHandles;
-				// KiteIC->BindAbilityActions(InputConfig.Get(), this, &ThisClass::Input_AbilityInputTagPressed, &ThisClass::Input_AbilityInputTagReleased, /*out*/ BindHandles);
+				KiteIC->BindAbilityActions(InputConfig.Get(), this, &ThisClass::Input_AbilityInputTagPressed, &ThisClass::Input_AbilityInputTagReleased, /*out*/ BindHandles);
 			} 
 		})
 	);
@@ -110,7 +113,23 @@ void AKiteCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	}
 }
 
-void AKiteCharacter::Input_LookMouse(const FInputActionValue& Value)
+void AKiteCharacterHero::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+
+	InitAbilitySystem();
+
+	AddAbilitySet();
+}
+
+void AKiteCharacterHero::OnRep_PlayerState()
+{
+	Super::OnRep_PlayerState();
+
+	InitAbilitySystem();
+}
+
+void AKiteCharacterHero::Input_LookMouse(const FInputActionValue& Value)
 {
 	// input is a Vector2D
 	FVector2D LookAxisVector = Value.Get<FVector2D>();
@@ -123,7 +142,7 @@ void AKiteCharacter::Input_LookMouse(const FInputActionValue& Value)
 	}
 }
 
-void AKiteCharacter::Input_Move(const FInputActionValue& Value)
+void AKiteCharacterHero::Input_Move(const FInputActionValue& Value)
 {
 	// input is a Vector2D
 	FVector2D MovementVector = Value.Get<FVector2D>();
@@ -144,4 +163,63 @@ void AKiteCharacter::Input_Move(const FInputActionValue& Value)
 		AddMovementInput(ForwardDirection, MovementVector.Y);
 		AddMovementInput(RightDirection, MovementVector.X);
 	}
+}
+
+void AKiteCharacterHero::Input_AbilityInputTagPressed(FGameplayTag AbilityInputTag)
+{
+	if (AbilityInputTag.IsValid())
+	{
+		AbilitySystemComponent->AbilityInputTagPressed(AbilityInputTag);
+	}
+}
+
+void AKiteCharacterHero::Input_AbilityInputTagReleased(FGameplayTag AbilityInputTag)
+{
+	if (AbilityInputTag.IsValid())
+	{
+		AbilitySystemComponent->AbilityInputTagReleased(AbilityInputTag);
+	}
+}
+
+void AKiteCharacterHero::InitAbilitySystem()
+{
+	AKitePlayerState* PS = GetPlayerState<AKitePlayerState>();
+	if (PS)
+	{
+		// 以防万一Cast一下
+		AbilitySystemComponent = Cast<UKiteAbilitySystemComponent>(PS->GetAbilitySystemComponent());
+		PS->GetAbilitySystemComponent()->InitAbilityActorInfo(PS, this);
+	}
+}
+
+// 只用在服务器上添加技能即可，对应的GameplayAbilitySpec会被自动复制到Owning Client。其他客户端（Simulated Proxies）将不会收到GameplayAbilitySpec
+void AKiteCharacterHero::AddAbilitySet()
+{
+	// Grant abilities, but only on the server	
+	if (GetLocalRole() != ROLE_Authority || !IsValid(AbilitySystemComponent) || AbilitySystemComponent->bCharacterAbilitiesGiven)
+	{
+		return;
+	}
+
+	if (!IsValid(AbilitySet))
+	{
+		UE_LOG(LogKite, Warning, TEXT("AbilitySet is not valid"));
+		return;
+	}
+	
+	AbilitySet->GiveToAbilitySystem(AbilitySystemComponent, OutGrantedHandles);
+
+	AbilitySystemComponent->bCharacterAbilitiesGiven = true;
+}
+
+void AKiteCharacterHero::RemoveAbilitySet()
+{
+	if (GetLocalRole() != ROLE_Authority || !IsValid(AbilitySystemComponent) || !AbilitySystemComponent->bCharacterAbilitiesGiven || !OutGrantedHandles)
+	{
+		return;
+	}
+	
+	OutGrantedHandles->TakeFromAbilitySystem(AbilitySystemComponent);
+
+	AbilitySystemComponent->bCharacterAbilitiesGiven = false;
 }
