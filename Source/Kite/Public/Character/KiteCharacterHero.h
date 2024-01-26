@@ -5,10 +5,10 @@
 #include "CoreMinimal.h"
 #include "InputActionValue.h"
 #include "GameFramework/Character.h"
-#include "KiteCharacter.generated.h"
+#include "KiteCharacterHero.generated.h"
 
 UCLASS(config=Game)
-class KITE_API AKiteCharacter : public ACharacter
+class KITE_API AKiteCharacterHero : public ACharacter
 {
 	GENERATED_BODY()
 
@@ -19,35 +19,43 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Kite|Input", meta = (AllowPrivateAccess = "true"))
 	TSoftObjectPtr<class UInputMappingContext> DefaultMappingContext;
 
-	UPROPERTY(VisibleAnywhere, Category = "Kite|Ability")
-	TObjectPtr<class UAbilitySystemComponent> AbilitySystemComponent;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Kite|Ability")
+	TObjectPtr<class UKiteAbilitySet> AbilitySet;
 
+	UPROPERTY(VisibleAnywhere, Category = "Kite|Ability")
+	TObjectPtr<class UKiteAbilitySystemComponent> AbilitySystemComponent;
+	
 protected:
-	/** Camera boom positioning the camera behind the character */
+	// Camera boom positioning the camera behind the character
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class USpringArmComponent* CameraBoom;
 
-	/** Follow camera */
+	// Follow camera
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* FollowCamera;
 	
 public:
-	// Sets default values for this character's properties
-	AKiteCharacter();
 
-	// Called every frame
+	AKiteCharacterHero();
+	
 	virtual void Tick(float DeltaTime) override;
 
-	// Called to bind functionality to input
+	//~Pawn Interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	//** Server only */
+	virtual void PossessedBy(AController* NewController) override;
+	//** Client only */
+	virtual void OnRep_PlayerState() override;
+	//~End Pawn Interface
 	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
-	/** Called for looking input */
-	void Input_LookMouse(const FInputActionValue& Value);
 	
-	/** Called for movement input */
+	void Input_LookMouse(const FInputActionValue& Value);
 	void Input_Move(const FInputActionValue& Value);
+	void Input_AbilityInputTagPressed(struct FGameplayTag AbilityInputTag);
+	void Input_AbilityInputTagReleased(FGameplayTag AbilityInputTag);
+
+	void InitAbilitySystem();
 };
