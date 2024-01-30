@@ -3,8 +3,6 @@
 
 #include "AbilitySystem/KiteAbilitySystemComponent.h"
 
-#include "Common/KiteMacros.h"
-
 
 UKiteAbilitySystemComponent::UKiteAbilitySystemComponent(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -96,7 +94,6 @@ void UKiteAbilitySystemComponent::ProcessAbilityInput(float DeltaTime, bool bGam
 	for (const FGameplayAbilitySpecHandle& AbilitySpecHandle : AbilitiesToActivate)
 	{
 		TryActivateAbility(AbilitySpecHandle);
-		kwarn("~TryActivateAbility %s, =============NetMode: %d", *GetName(), GetNetMode());
 	}
 
 	//
