@@ -13,3 +13,10 @@ void UKiteGameplayAbility::OnAvatarSet(const FGameplayAbilityActorInfo* ActorInf
 	Super::OnAvatarSet(ActorInfo, Spec);
 	
 }
+
+void UKiteGameplayAbility::BroadcastAbilityStateChanged(EKiteAbilityState OldState, EKiteAbilityState NewState)
+{
+	AbilityStateChangedDelegate.Broadcast(OldState, NewState);
+	K2_AbilityStateChangedDelegate.Broadcast(OldState, NewState);
+}
+
