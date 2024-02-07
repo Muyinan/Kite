@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Character\KiteCharacterHero.h"
+#include "..\..\Public\Character\KiteCharacterHero.h"
 
 #include "EnhancedInputSubsystems.h"
 #include "Camera/CameraComponent.h"

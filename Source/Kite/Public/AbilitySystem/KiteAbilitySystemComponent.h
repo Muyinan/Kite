@@ -28,9 +28,6 @@ public:
 	void ProcessAbilityInput(float DeltaTime, bool bGamePaused);
 	void ClearAbilityInput();
 
-	// 正在激活中的Combo技能被按下了
-	void ActivatingComboAbilityInputPressed(FGameplayAbilitySpec& Spec);
-	
 protected:
 	// Handles to abilities that had their input pressed this frame.
 	TArray<FGameplayAbilitySpecHandle> InputPressedSpecHandles;
@@ -40,7 +37,4 @@ protected:
 
 	// Handles to abilities that have their input held.
 	TArray<FGameplayAbilitySpecHandle> InputHeldSpecHandles;
-
-	// // Combo技能的输入缓存，因为Combo技能需要自己处理输入缓存，这里和普通技能分开
-	// TArray<FGameplayAbilitySpecHandle> ComboInputPressedSpecHandles;
 };
